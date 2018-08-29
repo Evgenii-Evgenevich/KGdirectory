@@ -1,0 +1,83 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <context:component-scan base-package="directory"/>
+
+    <!-- Database Information -->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="url" value="jdbc:postgresql://127.0.0.1:5434/postgres"/>
+        <property name="username" value="postgres"/>
+        <property name="password" value="password94"/>
+        <property name="driverClassName" value="org.postgresql.Driver"/>
+    </bean>
+
+    <bean id="hibernate5AnnotatedSessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="show_sql">true</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQL94Dialect</prop>
+                <prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
+            </props>
+        </property>
+        <property name="annotatedClasses">
+            <list>
+                <value>directory.model.Country</value>
+                <value>directory.model.Region</value>
+                <value>directory.model.District</value>
+                <value>directory.model.Territory</value>
+                <value>directory.model.Locality</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <property name="sessionFactory" ref="hibernate5AnnotatedSessionFactory"/>
+    </bean>
+
+    <bean id="countryDao" class="directory.dao.CountryRepository">
+        <property name="sessionFactory" ref="hibernate5AnnotatedSessionFactory"/>
+    </bean>
+    <bean id="regionDao" class="directory.dao.RegionRepository">
+        <property name="sessionFactory" ref="hibernate5AnnotatedSessionFactory"/>
+    </bean>
+    <bean id="districtDao" class="directory.dao.DistrictRepository">
+        <property name="sessionFactory" ref="hibernate5AnnotatedSessionFactory"/>
+    </bean>
+    <bean id="territoryDao" class="directory.dao.TerritoryRepository">
+        <property name="sessionFactory" ref="hibernate5AnnotatedSessionFactory"/>
+    </bean>
+    <bean id="localityDao" class="directory.dao.LocalityRepository">
+        <property name="sessionFactory" ref="hibernate5AnnotatedSessionFactory"/>
+    </bean>
+
+    <bean id="countryService" class="directory.service.CountryServiceImpl">
+        <property name="countryDao" ref="countryDao"/>
+    </bean>
+    <bean id="regionService" class="directory.service.RegionServiceImpl">
+        <property name="regionDao" ref="regionDao"/>
+    </bean>
+    <bean id="districtService" class="directory.service.DistrictServiceImpl">
+        <property name="districtDao" ref="districtDao"/>
+    </bean>
+    <bean id="territoryService" class="directory.service.TerritoryServiceImpl">
+        <property name="territoryDao" ref="territoryDao"/>
+    </bean>
+    <bean id="localityService" class="directory.service.LocalityServiceImpl">
+        <property name="localityDao" ref="localityDao"/>
+    </bean>
+
+    <context:component-scan base-package="directory"/>
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <mvc:default-servlet-handler/>
+    <mvc:annotation-driven/>
+
+</beans>
