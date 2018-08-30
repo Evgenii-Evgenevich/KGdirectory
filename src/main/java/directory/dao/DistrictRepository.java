@@ -6,6 +6,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -25,16 +26,19 @@ public class DistrictRepository implements DistrictDao {
         this.sessionFactory = sessionFactory;
     }
 
+    @Transactional
     public void addDistrict(District district) {
         Session session = this.sessionFactory.getCurrentSession();
         session.persist(district);
     }
 
+    @Transactional
     public void updateDistrict(District district) {
         Session session = this.sessionFactory.getCurrentSession();
         session.update(district);
     }
 
+    @Transactional
     public void removeDistrict(int id) {
         Session session = this.sessionFactory.getCurrentSession();
         District district = session.load(District.class, id);
@@ -44,6 +48,7 @@ public class DistrictRepository implements DistrictDao {
         }
     }
 
+    @Transactional
     public District getDistrictById(int id) {
         Session session = this.sessionFactory.getCurrentSession();
         District district = session.load(District.class, id);
@@ -51,10 +56,13 @@ public class DistrictRepository implements DistrictDao {
         return district;
     }
 
-    @SuppressWarnings("unchecked")
+    @Transactional
     public List<District> listDistricts() {
         CriteriaBuilder builder = this.sessionFactory.getCriteriaBuilder();
         CriteriaQuery<District> criteria = builder.createQuery(District.class);
+        Root<District> root = criteria.from(District.class);
+
+        criteria.select(root);
 
         Session session = this.sessionFactory.getCurrentSession();
         List<District> districts = session.createQuery(criteria).list();
@@ -62,14 +70,14 @@ public class DistrictRepository implements DistrictDao {
         return districts;
     }
 
-    @SuppressWarnings("unchecked")
+    @Transactional
     public List<District> findByRegionId(int regionId) {
         CriteriaBuilder builder = this.sessionFactory.getCriteriaBuilder();
         CriteriaQuery<District> criteria = builder.createQuery(District.class);
         Root<District> root = criteria.from(District.class);
 
-        criteria.where(
-                builder.equal(root.get("region_id"), regionId)
+        criteria.select(root).where(
+                builder.equal(root.get("regionId"), regionId)
         );
 
         Session session = this.sessionFactory.getCurrentSession();

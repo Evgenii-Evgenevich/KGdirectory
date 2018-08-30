@@ -5,6 +5,7 @@ import directory.model.Locality;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -23,16 +24,19 @@ public class LocalityRepository implements LocalityDao {
         this.sessionFactory = sessionFactory;
     }
 
+    @Transactional
     public void addLocality(Locality locality) {
         Session session = this.sessionFactory.getCurrentSession();
         session.persist(locality);
     }
 
+    @Transactional
     public void updateLocality(Locality locality) {
         Session session = this.sessionFactory.getCurrentSession();
         session.update(locality);
     }
 
+    @Transactional
     public void removeLocality(int id) {
         Session session = this.sessionFactory.getCurrentSession();
         Locality locality = (Locality) session.load(Locality.class, id);
@@ -42,6 +46,7 @@ public class LocalityRepository implements LocalityDao {
         }
     }
 
+    @Transactional
     public Locality getLocalityById(int id) {
         Session session = this.sessionFactory.getCurrentSession();
         Locality locality = session.load(Locality.class, id);
@@ -49,9 +54,13 @@ public class LocalityRepository implements LocalityDao {
         return locality;
     }
 
+    @Transactional
     public List<Locality> listLocalities() {
         CriteriaBuilder builder = this.sessionFactory.getCriteriaBuilder();
         CriteriaQuery<Locality> criteria = builder.createQuery(Locality.class);
+        Root<Locality> root = criteria.from(Locality.class);
+
+        criteria.select(root);
 
         Session session = this.sessionFactory.getCurrentSession();
         List<Locality> localities = session.createQuery(criteria).list();
@@ -59,13 +68,14 @@ public class LocalityRepository implements LocalityDao {
         return localities;
     }
 
+    @Transactional
     public List<Locality> findByTerritoryId(int territoryId) {
         CriteriaBuilder builder = this.sessionFactory.getCriteriaBuilder();
         CriteriaQuery<Locality> criteria = builder.createQuery(Locality.class);
         Root<Locality> root = criteria.from(Locality.class);
 
-        criteria.where(
-                builder.equal(root.get("territory_id"), territoryId)
+        criteria.select(root).where(
+                builder.equal(root.get("territoryId"), territoryId)
         );
 
         Session session = this.sessionFactory.getCurrentSession();

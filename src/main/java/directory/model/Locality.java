@@ -8,6 +8,7 @@ public class Locality {
 
     @Id
     @Column(name = "locality_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(name = "locality_name")

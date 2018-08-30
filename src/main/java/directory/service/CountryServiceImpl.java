@@ -42,6 +42,6 @@ public class CountryServiceImpl implements CountryService {
 
     @Transactional
     public List<Country> listCountries() {
-        return this.listCountries();
+        return this.countryDao.listCountries();
     }
 }

@@ -8,6 +8,7 @@ public class District {
 
     @Id
     @Column(name = "district_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(name = "district_name")

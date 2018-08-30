@@ -5,6 +5,7 @@ import directory.model.Country;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -23,16 +24,19 @@ public class CountryRepository implements CountryDao {
         this.sessionFactory = sessionFactory;
     }
 
+    @Transactional
     public void addCountry(Country country) {
         Session session = this.sessionFactory.getCurrentSession();
         session.persist(country);
     }
 
+    @Transactional
     public void updateCountry(Country country) {
         Session session = this.sessionFactory.getCurrentSession();
         session.update(country);
     }
 
+    @Transactional
     public void removeCountry(int id) {
         Session session = this.sessionFactory.getCurrentSession();
         Country country = session.load(Country.class, id);
@@ -42,6 +46,7 @@ public class CountryRepository implements CountryDao {
         }
     }
 
+    @Transactional
     public Country getCountryById(int id) {
         Session session = this.sessionFactory.getCurrentSession();
         Country country = session.load(Country.class, id);
@@ -49,9 +54,12 @@ public class CountryRepository implements CountryDao {
         return country;
     }
 
+    @Transactional
     public List<Country> listCountries() {
         CriteriaBuilder builder = this.sessionFactory.getCriteriaBuilder();
         CriteriaQuery<Country> criteria = builder.createQuery(Country.class);
+        Root<Country> root = criteria.from(Country.class);
+        criteria.select(root);
 
         Session session = this.sessionFactory.getCurrentSession();
         List<Country> countries = session.createQuery(criteria).list();

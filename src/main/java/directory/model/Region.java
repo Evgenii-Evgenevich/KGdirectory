@@ -8,6 +8,7 @@ public class Region {
 
     @Id
     @Column(name = "region_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(name = "region_name")

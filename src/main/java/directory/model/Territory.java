@@ -8,6 +8,7 @@ public class Territory {
 
     @Id
     @Column(name = "territory_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(name = "territory_name")

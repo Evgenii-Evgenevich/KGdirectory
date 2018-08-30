@@ -5,6 +5,7 @@ import directory.model.Territory;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -23,16 +24,19 @@ public class TerritoryRepository implements TerritoryDao {
         this.sessionFactory = sessionFactory;
     }
 
+    @Transactional
     public void addTerritory(Territory territory) {
         Session session = this.sessionFactory.getCurrentSession();
         session.persist(territory);
     }
 
+    @Transactional
     public void updateTerritory(Territory territory) {
         Session session = this.sessionFactory.getCurrentSession();
         session.update(territory);
     }
 
+    @Transactional
     public void removeTerritory(int id) {
         Session session = this.sessionFactory.getCurrentSession();
         Territory territory = session.load(Territory.class, id);
@@ -42,6 +46,7 @@ public class TerritoryRepository implements TerritoryDao {
         }
     }
 
+    @Transactional
     public Territory getTerritoryById(int id) {
         Session session = this.sessionFactory.getCurrentSession();
         Territory territory = session.load(Territory.class, id);
@@ -49,9 +54,13 @@ public class TerritoryRepository implements TerritoryDao {
         return territory;
     }
 
+    @Transactional
     public List<Territory> listTerritories() {
         CriteriaBuilder builder = this.sessionFactory.getCriteriaBuilder();
         CriteriaQuery<Territory> criteria = builder.createQuery(Territory.class);
+        Root<Territory> root = criteria.from(Territory.class);
+
+        criteria.select(root);
 
         Session session = this.sessionFactory.getCurrentSession();
         List<Territory> territories = session.createQuery(criteria).list();
@@ -59,13 +68,14 @@ public class TerritoryRepository implements TerritoryDao {
         return territories;
     }
 
+    @Transactional
     public List<Territory> findByDistrictId(int districtId) {
         CriteriaBuilder builder = this.sessionFactory.getCriteriaBuilder();
         CriteriaQuery<Territory> criteria = builder.createQuery(Territory.class);
         Root<Territory> root = criteria.from(Territory.class);
 
-        criteria.where(
-                builder.equal(root.get("district_id"), districtId)
+        criteria.select(root).where(
+                builder.equal(root.get("districtId"), districtId)
         );
 
         Session session = this.sessionFactory.getCurrentSession();
